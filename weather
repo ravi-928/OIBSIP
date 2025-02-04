@@ -1,0 +1,114 @@
+----html-----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <input type="text" id="city" placeholder="Enter City Name">
+        <button onclick="getWeather()">Get Weather</button>
+        <div id="weatherResult">
+            <!-- Weather data will be displayed here -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+------css-----
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+input {
+    padding: 10px;
+    margin: 10px;
+    width: 80%;
+    font-size: 1em;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#weatherResult {
+    margin-top: 20px;
+}
+
+.weather-info {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+------javascript-----
+  const apiKey = 'your-api-key-here'; // Replace with your actual OpenWeatherMap API key
+
+// Function to fetch and display weather data
+async function getWeather() {
+    const city = document.getElementById("city").value;
+    if (city === "") {
+        alert("Please enter a city name.");
+        return;
+    }
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('City not found');
+        }
+        const data = await response.json();
+
+        const temperature = data.main.temp;
+        const weatherCondition = data.weather[0].description;
+        const humidity = data.main.humidity;
+        const windSpeed = data.wind.speed;
+
+        // Displaying weather data
+        document.getElementById("weatherResult").innerHTML = `
+            <div class="weather-info">
+                <p>Temperature: ${temperature}°C</p>
+                <p>Condition: ${weatherCondition}</p>
+                <p>Humidity: ${humidity}%</p>
+                <p>Wind Speed: ${windSpeed} m/s</p>
+            </div>
+        `;
+    } catch (error) {
+        // Error handling
+        document.getElementById("weatherResult").innerHTML = `
+            <div class="weather-info" style="color: red;">
+                <p>Error: ${error.message}</p>
+            </div>
+        `;
+    }
+}
